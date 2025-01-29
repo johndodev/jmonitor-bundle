@@ -1,4 +1,4 @@
-# Jlog Bundle
+# Jmonitor Bundle
 
 ## Installation
 
@@ -13,7 +13,7 @@ composer require johndodev/jmonitor-bundle
 JMONITOR_API_KEY=your_api_key
 ```
 
-### config/packages/jlog.yaml
+### config/packages/jmonitor.yaml
 ```yaml
 jmonitor:
     enabled: true
