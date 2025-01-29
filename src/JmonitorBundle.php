@@ -24,6 +24,7 @@ class JmonitorBundle extends AbstractBundle
         $definition->rootNode()
             ->children() // jmonitor
                 ->booleanNode('enabled')->defaultTrue()->end()
+                ->scalarNode('project_api_key')->isRequired()->end()
             ->end()
         ;
     }
