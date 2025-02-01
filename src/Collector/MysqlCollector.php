@@ -15,11 +15,8 @@ class MysqlCollector implements CollectorInterface
         $this->connection = $connection;
     }
 
-    public function collect()
+    public function collect(): array
     {
-        // LA
-        $result = $this->connection->fetchAllAssociative("SELECT EVENT_NAME, COUNT_STAR FROM performance_schema.events_statements_summary_global_by_event_name WHERE EVENT_NAME IN ('statement/sql/select', 'statement/sql/insert', 'statement/sql/update', 'statement/sql/delete')");
-
-        return $result;
+        return $this->connection->fetchAllKeyValue("SELECT EVENT_NAME, COUNT_STAR FROM performance_schema.events_statements_summary_global_by_event_name WHERE EVENT_NAME IN ('statement/sql/select', 'statement/sql/insert', 'statement/sql/update', 'statement/sql/delete')");
     }
 }

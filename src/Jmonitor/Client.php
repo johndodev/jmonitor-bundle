@@ -21,20 +21,25 @@ class Client
     private StreamFactoryInterface $streamFactory;
     private string $baseUrl;
     private Json $json;
-    private array $headers = [];
+    private array $headers;
 
-    public function __construct(string $baseUrl, ?string $projectApiKey = null, ?ClientInterface $httpClient = null)
+    public function __construct(string $baseUrl, string $jmonitorVersion, string $projectApiKey, ?ClientInterface $httpClient = null)
     {
         $this->httpClient = $httpClient ?? Psr18ClientDiscovery::find();
         $this->requestFactory = $reqFactory ?? Psr17FactoryDiscovery::findRequestFactory();
         $this->streamFactory = $streamFactory ?? Psr17FactoryDiscovery::findStreamFactory();
         $this->json = new Json();
-
-        if ($projectApiKey) {
-            $this->headers['X-API-KEY'] = $projectApiKey;
-        }
+        $this->headers = [
+            'X-JMONITOR-VERSION' => $jmonitorVersion,
+            'X-JMONITOR-API-KEY' => $projectApiKey,
+        ];
 
         $this->baseUrl = rtrim($baseUrl, '/');
+    }
+
+    public function sendMetrics(array $metrics)
+    {
+        return $this->post('/metrics', $metrics);
     }
 
     public function post(string $path, $body = null, array $query = [], ?string $contentType = null)
@@ -67,7 +72,7 @@ class Client
 
     private function parseResponse(ResponseInterface $response)
     {
-        if (204 === $response->getStatusCode()) {
+        if ($response->getStatusCode() === 204 || $response->getStatusCode() === 202) {
             return null;
         }
 
