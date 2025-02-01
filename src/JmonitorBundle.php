@@ -2,6 +2,9 @@
 
 namespace Johndodev\JmonitorBundle;
 
+use Johndodev\JmonitorBundle\Collector\CollectorInterface;
+use Johndodev\JmonitorBundle\Collector\MysqlCollector;
+use Johndodev\JmonitorBundle\Command\Collector;
 use Johndodev\JmonitorBundle\Jmonitor\Client;
 use Johndodev\JmonitorBundle\Jmonitor\Jmonitor;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
@@ -10,6 +13,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
 class JmonitorBundle extends AbstractBundle
 {
@@ -29,10 +33,32 @@ class JmonitorBundle extends AbstractBundle
             ])
         ;
 
+
+        $container->services()->set(MysqlCollector::class)
+            ->args([
+                service('doctrine.dbal.default_connection')
+            ])
+            ->tag('jmonitor.collector')
+        ;
+
+//        // tag les collecteurs
+//        $container->services()
+//            ->instanceof(CollectorInterface::class)
+//            ->tag('jmonitor.collector')
+//        ;
+
         $container->services()->set(Jmonitor::class)
             ->args([
-                service(Client::class)
+                service(Client::class),
+                tagged_iterator('jmonitor.collector')
             ])
+        ;
+
+        $container->services()->set(Collector::class)
+            ->args([
+                service(Jmonitor::class)
+            ])
+            ->tag('console.command')
         ;
     }
 
