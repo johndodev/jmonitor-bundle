@@ -17,12 +17,12 @@ class Jmonitor
 
     public function collectMetrics(): array
     {
-        $results = [];
+        $metrics = [];
 
         foreach ($this->collectors as $name => $collector) {
-            $results[$name] = $collector->collect();
+            $metrics[$name] = $collector->collect();
         }
 
-        return $results;
+        return $metrics;
     }
 }
