@@ -15,7 +15,6 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_it
 
 class JmonitorBundle extends AbstractBundle
 {
-    private const DEFAULT_ENDPOINT = 'https://collector.jmonitor.io';
     private const VERSION = 'alpha';
 
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
@@ -26,7 +25,7 @@ class JmonitorBundle extends AbstractBundle
 
         $container->services()->set(Client::class)
             ->args([
-                $config['base_url'] ?? self::DEFAULT_ENDPOINT,
+                $config['base_url'],
                 self::VERSION,
                 $config['project_api_key'],
                 service($config['http_client'] ?? '')->ignoreOnInvalid(),
@@ -59,6 +58,11 @@ class JmonitorBundle extends AbstractBundle
                 service(Client::class),
             ])
             ->tag('console.command')
+            ->tag('scheduler.task', [
+                'frequency' => 15,
+                'schedule' => $config['schedule'],
+                'trigger' => 'every',
+            ])
         ;
     }
 
@@ -71,8 +75,13 @@ class JmonitorBundle extends AbstractBundle
             ->children() // jmonitor
                 ->booleanNode('enabled')->defaultTrue()->end()
                 ->scalarNode('project_api_key')->end()
-                ->scalarNode('base_url')->end()
+                ->scalarNode('base_url')->defaultValue('https://collector.jmonitor.io')->cannotBeEmpty()->end()
                 ->scalarNode('http_client')->end()
+                ->scalarNode('schedule')->cannotBeEmpty()->defaultValue('default')->info('Name of the schedule used to handle the recurring metrics collection')->end()
+            ->end()
+            ->validate()
+                ->ifTrue(fn($config) => is_array($config) && $config['enabled'] && empty($config['project_api_key']))
+                ->thenInvalid('The "project_api_key" must be set if "enabled" is true.')
             ->end()
         ;
     }

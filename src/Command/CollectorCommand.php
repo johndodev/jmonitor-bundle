@@ -27,6 +27,10 @@ class CollectorCommand extends Command
     {
         $this->client->sendMetrics($this->jmonitor->collectMetrics());
 
+        // todo handle response (async si possible ?)
+        // si project invalide ou autre, délai croissant
+        // si bug, ..
+
         return Command::SUCCESS;
     }
 }
