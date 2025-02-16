@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Johndodev\JmonitorBundle\Jmonitor;
 
+use Johndodev\JmonitorBundle\Collector\CollectorInterface;
+
 class Jmonitor
 {
-    private Client $client;
+    /**
+     * @var CollectorInterface[]
+     */
     private iterable $collectors;
 
-    public function __construct(Client $client, iterable $collectors)
+    public function __construct(iterable $collectors)
     {
-        $this->client = $client;
         $this->collectors = $collectors;
     }
 
@@ -20,7 +23,11 @@ class Jmonitor
         $metrics = [];
 
         foreach ($this->collectors as $name => $collector) {
-            $metrics[$name] = $collector->collect();
+            $metrics[] = [
+                'metrics' => $collector->collect(),
+                'version' => $collector->getVersion(),
+                'name' => $name,
+            ];
         }
 
         return $metrics;

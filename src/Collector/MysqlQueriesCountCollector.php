@@ -6,7 +6,7 @@ namespace Johndodev\JmonitorBundle\Collector;
 
 use Doctrine\DBAL\Connection;
 
-class MysqlCollector implements CollectorInterface
+class MysqlQueriesCountCollector implements CollectorInterface
 {
     private Connection $connection;
 
@@ -17,8 +17,6 @@ class MysqlCollector implements CollectorInterface
 
     public function collect(): array
     {
-        // return $this->connection->fetchAllKeyValue("SELECT EVENT_NAME, COUNT_STAR FROM performance_schema.events_statements_summary_global_by_event_name WHERE EVENT_NAME IN ('statement/sql/select', 'statement/sql/insert', 'statement/sql/update', 'statement/sql/delete')");
-
         $sql = "SELECT
             schema_name,
             CAST(SUM(CASE WHEN digest_text LIKE 'SELECT%' THEN COUNT_STAR ELSE 0 END) AS UNSIGNED) AS total_select_queries,
@@ -34,5 +32,10 @@ class MysqlCollector implements CollectorInterface
             schema_name";
 
         return $this->connection->fetchAllAssociative($sql);
+    }
+
+    public function getVersion(): int
+    {
+        return 1;
     }
 }

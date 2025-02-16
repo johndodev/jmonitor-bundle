@@ -2,7 +2,8 @@
 
 namespace Johndodev\JmonitorBundle;
 
-use Johndodev\JmonitorBundle\Collector\MysqlCollector;
+use Johndodev\JmonitorBundle\Collector\MysqlQueriesCountCollector;
+use Johndodev\JmonitorBundle\Collector\MysqlSlowQueriesCollector;
 use Johndodev\JmonitorBundle\Command\CollectorCommand;
 use Johndodev\JmonitorBundle\Jmonitor\Client;
 use Johndodev\JmonitorBundle\Jmonitor\Jmonitor;
@@ -32,22 +33,23 @@ class JmonitorBundle extends AbstractBundle
             ])
         ;
 
-        $container->services()->set(MysqlCollector::class)
+        $container->services()->set(MysqlQueriesCountCollector::class)
             ->args([
                 service('doctrine.dbal.default_connection')
             ])
-            ->tag('jmonitor.collector', ['name' => 'mysql'])
+            ->tag('jmonitor.collector', ['name' => 'mysql.queries_count'])
         ;
 
-//        // tag les collecteurs
-//        $container->services()
-//            ->instanceof(CollectorInterface::class)
-//            ->tag('jmonitor.collector')
-//        ;
+        $container->services()->set(MysqlSlowQueriesCollector::class)
+            ->args([
+                service('doctrine.dbal.default_connection')
+            ])
+            ->tag('jmonitor.collector', ['name' => 'mysql.slow_queries'])
+        ;
 
         $container->services()->set(Jmonitor::class)
             ->args([
-                service(Client::class),
+                // service(Client::class),
                 tagged_iterator('jmonitor.collector', 'name')
             ])
         ;
