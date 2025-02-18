@@ -6,9 +6,9 @@ namespace Johndodev\JmonitorBundle\Jmonitor;
 
 use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
-use Johndodev\JmonitorBundle\Exceptions\JmonitorException;
+use Johndodev\JmonitorBundle\Exceptions\ResponseException;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
-use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -42,9 +42,9 @@ class Client
         return $this->post('/metrics', $metrics);
     }
 
-    public function post(string $path, $body = null, array $query = [], ?string $contentType = null)
+    public function post(string $path, $body = null, array $query = [])
     {
-        $this->headers['Content-type'] = $contentType ?? 'application/json';
+        $this->headers['Content-type'] = 'application/json';
 
         $body = $this->json->serialize($body);
 
@@ -61,13 +61,9 @@ class Client
             $request = $request->withAddedHeader($header, $value);
         }
 
-        try {
-            return $this->parseResponse($this->httpClient->sendRequest($request));
-        } catch (NetworkExceptionInterface $e) {
-            throw $e;
-            // todo custom exception ?
-            // throw new CommunicationException($e->getMessage(), $e->getCode(), $e);
-        }
+        $response = $this->httpClient->sendRequest($request);
+
+        return $this->parseResponse($response);
     }
 
     private function parseResponse(ResponseInterface $response)
@@ -77,14 +73,7 @@ class Client
         }
 
         if (!$this->isJSONResponse($response->getHeader('content-type'))) {
-            throw new JmonitorException('InvalidResponseBodyException');
-            // throw new InvalidResponseBodyException($response, (string) $response->getBody());
-        }
-
-        if ($response->getStatusCode() >= 300) {
-            $body = $this->json->unserialize((string) $response->getBody()) ?? $response->getReasonPhrase();
-            throw new JmonitorException('ApiException');
-            // throw new ApiException($response, $body);
+            throw new ResponseException('Unexpected response content-type : '.implode(', ', $response->getHeader('content-type')), (string) $response->getBody());
         }
 
         return $this->json->unserialize((string) $response->getBody());
@@ -97,10 +86,12 @@ class Client
 
     private function isJSONResponse(array $headerValues): bool
     {
-        $filteredHeaders = array_filter($headerValues, static function (string $headerValue) {
-            return false !== strpos($headerValue, 'application/json');
-        });
+        foreach ($headerValues as $headerValue) {
+            if (str_contains($headerValue, 'application/json')) {
+                return true;
+            }
+        }
 
-        return \count($filteredHeaders) > 0;
+        return false;
     }
 }

@@ -57,7 +57,9 @@ class JmonitorBundle extends AbstractBundle
         $container->services()->set(CollectorCommand::class)
             ->args([
                 service(Jmonitor::class),
+                service($config['cache']),
                 service(Client::class),
+                service('logger')->ignoreOnInvalid(),
             ])
             ->tag('console.command')
             ->tag('scheduler.task', [
@@ -79,7 +81,8 @@ class JmonitorBundle extends AbstractBundle
                 ->scalarNode('project_api_key')->end()
                 ->scalarNode('base_url')->defaultValue('https://collector.jmonitor.io')->cannotBeEmpty()->end()
                 ->scalarNode('http_client')->end()
-                ->scalarNode('schedule')->cannotBeEmpty()->defaultValue('default')->info('Name of the schedule used to handle the recurring metrics collection')->end()
+                ->scalarNode('cache')->cannotBeEmpty()->defaultValue('cache.app')->info('Name of a Psr\Cache\CacheItemPoolInterface service, default is "cache.app"')->end()
+                ->scalarNode('schedule')->cannotBeEmpty()->defaultValue('default')->info('Name of the schedule used to handle the recurring metrics collection, default is "default"')->end()
             ->end()
             ->validate()
                 ->ifTrue(fn($config) => is_array($config) && $config['enabled'] && empty($config['project_api_key']))
