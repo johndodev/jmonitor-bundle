@@ -65,11 +65,7 @@ class CollectorCommand extends Command
 
         $metrics = array_merge($metrics, $this->context->getMetrics());
 
-        foreach ($metrics as $metric) {
-            if ($metric['name'] === 'mysql.queries_count') {
-                $this->logger?->debug('Metrics collected', ['metrics' => $metric]);
-            }
-        }
+        $this->logger?->debug('Metrics collected', ['metrics' => $metrics]);
 
         try {
             $response = $this->client->sendMetrics($metrics);
@@ -79,6 +75,7 @@ class CollectorCommand extends Command
             return $this->handleFailure($metrics);
         }
 
+        $this->handleSuccess();
         // TODO handle specific error response
 
         return Command::SUCCESS;
