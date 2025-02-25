@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace Johndodev\JmonitorBundle\Collector;
 
 use Doctrine\DBAL\Connection;
+use Psr\Log\LoggerInterface;
 
 class MysqlQueriesCountCollector implements CollectorInterface
 {
     private Connection $connection;
+    private LoggerInterface $logger;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, LoggerInterface $logger)
     {
         $this->connection = $connection;
+        $this->logger = $logger;
     }
 
     public function collect(): array
@@ -31,7 +34,11 @@ class MysqlQueriesCountCollector implements CollectorInterface
         GROUP BY
             schema_name";
 
-        return $this->connection->fetchAllAssociative($sql);
+        $result = $this->connection->fetchAllAssociative($sql);
+
+        $this->logger->info('collected', ['result' => $result]);
+
+        return $result;
     }
 
     public function getVersion(): int
