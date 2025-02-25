@@ -65,7 +65,11 @@ class CollectorCommand extends Command
 
         $metrics = array_merge($metrics, $this->context->getMetrics());
 
-        $this->logger?->debug('Metrics collected', ['metrics' => $metrics]);
+        foreach ($metrics as $metric) {
+            if ($metric['name'] === 'mysql.queries_count') {
+                $this->logger?->debug('Metrics collected', ['metrics' => $metric]);
+            }
+        }
 
         try {
             $response = $this->client->sendMetrics($metrics);
