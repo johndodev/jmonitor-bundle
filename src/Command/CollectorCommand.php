@@ -65,6 +65,8 @@ class CollectorCommand extends Command
 
         $metrics = array_merge($metrics, $this->context->getMetrics());
 
+        $this->logger->debug('Metrics collected', ['metrics' => $metrics]);
+
         try {
             $response = $this->client->sendMetrics($metrics);
         } catch (ClientExceptionInterface $e) {
