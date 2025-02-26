@@ -3,9 +3,8 @@
 ## Installation
 
 ```bash
-composer require johndodev/jmonitor-bundle
+composer require johndodev/jmonitor-bundle:dev-master
 ```
-
 ## Configuration
 
 ### .env
@@ -17,7 +16,11 @@ JMONITOR_API_KEY=your_api_key
 ```yaml
 jmonitor:
     enabled: true
-    collectors:
-        mysql:
-            type: mysql
+    project_api_key: '%env(JMONITOR_API_KEY)%'
+    http_client: 'http_client'
+    cache: 'cache.app'
+    schedule: 'default'
+#    collectors:
+#        mysql:
+#            type: mysql
 ```
