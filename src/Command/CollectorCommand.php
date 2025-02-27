@@ -58,11 +58,6 @@ class CollectorCommand extends Command
 
         try {
             $metrics = $this->jmonitor->collectMetrics();
-        } catch (ResponseException $e) {
-            $this->logger?->error('Error while collecting metrics', [
-                'exception' => $e,
-                'response' => $e->getResponse(),
-            ]);
         } catch (\Throwable $e) {
             $this->logger?->error('Error while collecting metrics', [
                 'exception' => $e,
@@ -75,6 +70,13 @@ class CollectorCommand extends Command
 
         try {
             $this->client->sendMetrics($metrics);
+        } catch (ResponseException $e) {
+            $this->logger?->error('Error while sending metrics, next send delayed', [
+                'exception' => $e,
+                'response' => $e->getResponse(),
+            ]);
+
+            return $this->handleFailure();
         } catch (ClientExceptionInterface $e) {
             $this->logger?->error('Error while sending metrics, next send delayed', ['exception' => $e]);
 
