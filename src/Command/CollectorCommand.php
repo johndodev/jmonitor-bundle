@@ -2,6 +2,7 @@
 
 namespace Johndodev\JmonitorBundle\Command;
 
+use Johndodev\JmonitorBundle\Exceptions\ResponseException;
 use Johndodev\JmonitorBundle\Jmonitor\Client;
 use Johndodev\JmonitorBundle\Jmonitor\Jmonitor;
 use Johndodev\JmonitorBundle\Model\Context;
@@ -57,8 +58,15 @@ class CollectorCommand extends Command
 
         try {
             $metrics = $this->jmonitor->collectMetrics();
+        } catch (ResponseException $e) {
+            $this->logger?->error('Error while collecting metrics', [
+                'exception' => $e,
+                'response' => $e->getResponse(),
+            ]);
         } catch (\Throwable $e) {
-            $this->logger?->error('Error while collecting metrics', ['exception' => $e]);
+            $this->logger?->error('Error while collecting metrics', [
+                'exception' => $e,
+            ]);
 
             return Command::FAILURE;
         }
