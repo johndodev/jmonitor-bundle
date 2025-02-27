@@ -39,7 +39,7 @@ class CollectorCommand extends Command
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $this->contextItem = $this->cache->getItem('JMONITOR_CONTEXT');
-        $this->context = new Context(json_decode($this->contextItem->get() ?: '{}', true)); ;
+        $this->context = new Context(json_decode($this->contextItem->get() ?: '{}', true));
 
         $this->logger->debug('Context loaded', ['context nb consecutive failures' => $this->context->getNbConsecutiveFailures()]);
 
@@ -71,24 +71,24 @@ class CollectorCommand extends Command
             return Command::FAILURE;
         }
 
-        $metrics = array_merge($metrics, $this->context->getMetrics());
+        $this->logger?->debug('Metrics collected', ['metrics' => $metrics]);
 
         try {
-            $response = $this->client->sendMetrics($metrics);
+            $this->client->sendMetrics($metrics);
         } catch (ClientExceptionInterface $e) {
             $this->logger?->error('Error while sending metrics, next send delayed', ['exception' => $e]);
 
-            return $this->handleFailure($metrics);
+            return $this->handleFailure();
         }
 
+        $this->handleSuccess();
         // TODO handle specific error response
 
         return Command::SUCCESS;
     }
 
-    private function handleFailure(array $metricsToSave): int
+    private function handleFailure(): int
     {
-        $this->context->setMetrics($metricsToSave);
         $this->context->setNbConsecutiveFailures($this->context->getNbConsecutiveFailures() + 1);
 
         if ($this->context->getNbConsecutiveFailures() === 1) {
@@ -104,7 +104,6 @@ class CollectorCommand extends Command
 
     private function handleSuccess(): int
     {
-        $this->context->setMetrics([]);
         $this->context->setNbDelayedExecution(0);
         $this->context->setNbConsecutiveFailures(0);
 

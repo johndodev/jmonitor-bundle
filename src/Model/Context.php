@@ -8,13 +8,11 @@ class Context implements \JsonSerializable
 {
     private int $nbDelayedExecution;
     private int $nbConsecutiveFailures;
-    private array $metrics;
 
     public function __construct(array $datas = [])
     {
         $this->nbDelayedExecution = $datas['nbDelayedExecution'] ?? 0;
         $this->nbConsecutiveFailures = $datas['nbConsecutiveFailures'] ?? 0;
-        $this->metrics = $datas['metrics'] ?? [];
     }
 
     public function getNbDelayedExecution(): int
@@ -37,22 +35,11 @@ class Context implements \JsonSerializable
         $this->nbConsecutiveFailures = $nbConsecutiveFailures;
     }
 
-    public function getMetrics(): array
-    {
-        return $this->metrics;
-    }
-
-    public function setMetrics(array $metrics): void
-    {
-        $this->metrics = $metrics;
-    }
-
     public function jsonSerialize(): mixed
     {
         return [
             'nbDelayedExecution' => $this->nbDelayedExecution,
             'nbConsecutiveFailures' => $this->nbConsecutiveFailures,
-            'metrics' => $this->metrics,
         ];
     }
 }

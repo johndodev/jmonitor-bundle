@@ -33,20 +33,6 @@ class JmonitorBundle extends AbstractBundle
             ])
         ;
 
-        $container->services()->set(MysqlQueriesCountCollector::class)
-            ->args([
-                service('doctrine.dbal.default_connection')
-            ])
-            ->tag('jmonitor.collector', ['name' => 'mysql.queries_count'])
-        ;
-
-        $container->services()->set(MysqlSlowQueriesCollector::class)
-            ->args([
-                service('doctrine.dbal.default_connection')
-            ])
-            ->tag('jmonitor.collector', ['name' => 'mysql.slow_queries'])
-        ;
-
         $container->services()->set(Jmonitor::class)
             ->args([
                 // service(Client::class),
@@ -67,6 +53,20 @@ class JmonitorBundle extends AbstractBundle
                 'schedule' => $config['schedule'],
                 'trigger' => 'every',
             ])
+        ;
+
+        $container->services()->set(MysqlQueriesCountCollector::class)
+            ->args([
+                service('doctrine.dbal.default_connection')
+            ])
+            ->tag('jmonitor.collector', ['name' => 'mysql.queries_count'])
+        ;
+
+        $container->services()->set(MysqlSlowQueriesCollector::class)
+            ->args([
+                service('doctrine.dbal.default_connection')
+            ])
+            ->tag('jmonitor.collector', ['name' => 'mysql.slow_queries'])
         ;
     }
 
