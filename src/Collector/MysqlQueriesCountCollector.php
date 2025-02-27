@@ -27,7 +27,7 @@ class MysqlQueriesCountCollector implements CollectorInterface
             performance_schema.events_statements_summary_by_digest
         WHERE
             schema_name IS NOT NULL
-            AND schema_name NOT IN ('performance_schema', 'information_schema', 'mysql')
+            AND schema_name NOT IN ('performance_schema', 'information_schema', 'mysql', 'phpmyadmin')
         GROUP BY
             schema_name";
 
