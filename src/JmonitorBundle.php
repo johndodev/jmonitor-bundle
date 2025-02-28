@@ -4,6 +4,7 @@ namespace Johndodev\JmonitorBundle;
 
 use Johndodev\JmonitorBundle\Collector\MysqlQueriesCountCollector;
 use Johndodev\JmonitorBundle\Collector\MysqlSlowQueriesCollector;
+use Johndodev\JmonitorBundle\Collector\NodeCollector;
 use Johndodev\JmonitorBundle\Command\CollectorCommand;
 use Johndodev\JmonitorBundle\Jmonitor\Client;
 use Johndodev\JmonitorBundle\Jmonitor\Jmonitor;
@@ -80,7 +81,12 @@ class JmonitorBundle extends AbstractBundle
         }
 
         if ($config['collectors']['node']['enabled'] ?? false) {
+            $container->services()->set(NodeCollector::class)
+                ->args([
 
+                ])
+                ->tag('jmonitor.collector', ['name' => 'mysql.slow_queries'])
+            ;
         }
     }
 

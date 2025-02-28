@@ -15,6 +15,7 @@
     "require": {
         "php": "^8.2",
         "ext-json": "*",
+        "cronfig/sysinfo": "^1.0",
         "doctrine/doctrine-bundle": "^2.13",
         "php-http/discovery": "^1.20",
         "psr/http-client": "^1.0",
