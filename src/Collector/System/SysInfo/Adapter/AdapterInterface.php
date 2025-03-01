@@ -4,11 +4,11 @@ namespace Johndodev\JmonitorBundle\Collector\System\SysInfo\Adapter;
 
 interface AdapterInterface
 {
-    public function getTotalMemory(): int;
+    public function getTotalMemory(): ?int;
 
-    public function getUsedMemory(): int;
+    public function getAvailableMemory(): ?int;
 
-    public function getLoad();
+    public function getLoadPercent(): ?int;
 
     public function getCoreCount(): int;
 
@@ -16,5 +16,5 @@ interface AdapterInterface
 
     public function getDiskFreeSpace(string $path): int;
 
-    public function reset(): void;
+    public function clearPropertyCache(): void;
 }

@@ -15,19 +15,19 @@ class SysInfo
         $this->adapter = $adapter;
     }
 
-    public function getTotalMemory(): int
+    public function getTotalMemory(): ?int
     {
         return $this->adapter->getTotalMemory();
     }
 
-    public function getUsedMemory(): int
+    public function getAvailableMemory(): ?int
     {
-        return $this->adapter->getUsedMemory();
+        return $this->adapter->getAvailableMemory();
     }
 
-    public function getLoad()
+    public function getLoadPercent(): ?int
     {
-        return $this->adapter->getLoad();
+        return $this->adapter->getLoadPercent();
     }
 
     public function getCoreCount(): int
@@ -43,5 +43,10 @@ class SysInfo
     public function getDiskFreeSpace(string $path): int
     {
         return $this->adapter->getDiskFreeSpace($path);
+    }
+
+    public function clearPropertyCache(): void
+    {
+        $this->adapter->clearPropertyCache();
     }
 }

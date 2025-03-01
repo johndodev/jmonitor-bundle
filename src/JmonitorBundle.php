@@ -83,7 +83,7 @@ class JmonitorBundle extends AbstractBundle
         if ($config['collectors']['system']['enabled'] ?? false) {
             $container->services()->set(SystemCollector::class)
                 ->args([
-
+                    service($config['cache']),
                 ])
                 ->tag('jmonitor.collector', ['name' => 'system'])
             ;

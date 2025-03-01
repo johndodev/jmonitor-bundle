@@ -7,12 +7,21 @@ namespace Johndodev\JmonitorBundle\Collector\System;
 use Johndodev\JmonitorBundle\Collector\CollectorInterface;
 use Johndodev\JmonitorBundle\Collector\System\SysInfo\Adapter\AdapterInterface;
 use Johndodev\JmonitorBundle\Collector\System\SysInfo\Adapter\LinuxAdapter;
+use Johndodev\JmonitorBundle\Collector\System\SysInfo\Adapter\WindowsAdapter;
 use Johndodev\JmonitorBundle\Collector\System\SysInfo\SysInfo;
+use Psr\Cache\CacheItemPoolInterface;
 
 // TODO configurable /
 class SystemCollector implements CollectorInterface
 {
     private ?SysInfo $sysInfo = null;
+
+    private CacheItemPoolInterface $cache;
+
+    public function __construct(CacheItemPoolInterface $cache)
+    {
+        $this->cache = $cache;
+    }
 
     public function collect(): array
     {
@@ -25,12 +34,15 @@ class SystemCollector implements CollectorInterface
             ],
             'cpu' => [
                 'cores' => $sysInfo->getCoreCount(),
-                'load' => $sysInfo->getLoad(),
+                'load' => $sysInfo->getLoadPercent(),
             ],
             'ram' => [
-                // $os->get
+                'total' => $sysInfo->getTotalMemory(),
+                'available' => $sysInfo->getAvailableMemory(),
             ],
         ];
+
+
 
         dd($stats);
     }
@@ -47,6 +59,10 @@ class SystemCollector implements CollectorInterface
 
     private function getAdapter(): AdapterInterface
     {
-        return new LinuxAdapter();
+        if (PHP_OS_FAMILY === 'Windows') {
+            return new WindowsAdapter($this->cache);
+        }
+
+        return new LinuxAdapter($this->cache);
     }
 }

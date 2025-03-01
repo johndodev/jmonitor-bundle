@@ -5,10 +5,27 @@ declare(strict_types=1);
 namespace Johndodev\JmonitorBundle\Collector\System\SysInfo\Adapter;
 
 use Johndodev\JmonitorBundle\Collector\System\SysInfo\Exceptions\SysInfoException;
+use Psr\Cache\CacheItemPoolInterface;
 
 abstract class AbstractAdapter implements AdapterInterface
 {
     private array $availableFunctions = [];
+
+    /**
+     * Used for values that basically never change, like core count, total memory, etc.
+     */
+    protected CacheItemPoolInterface $cache;
+
+    /**
+     * Used to store values that are not supposed to change during one collector run.
+     * Cleared at the end of the collect
+     */
+    private array $propertyCache = [];
+
+    public function __construct(CacheItemPoolInterface $cache)
+    {
+        $this->cache = $cache;
+    }
 
     public function getDiskTotalSpace(string $path): int
     {
@@ -30,6 +47,36 @@ abstract class AbstractAdapter implements AdapterInterface
         $this->availableFunctions[$name] = true;
     }
 
+    protected function getCacheValue(string $name, callable $callback): mixed
+    {
+        $item = $this->cache->getItem($name);
+
+        if ($item->isHit()) {
+            return $item->get();
+        }
+
+        $value = $callback($item);
+        $item->set($value);
+
+        $this->cache->save($item);
+
+        return $value;
+    }
+
+    protected function getPropertyCache(string $name, callable $callback): mixed
+    {
+        if (array_key_exists($name, $this->propertyCache)) {
+            return $this->propertyCache[$name];
+        }
+
+        return $this->propertyCache[$name] = $callback();
+    }
+
+    public function clearPropertyCache(): void
+    {
+        $this->propertyCache = [];
+    }
+
     private function assertFunctionExist(string $name): void
     {
         if (!function_exists($name)) {
@@ -45,9 +92,5 @@ abstract class AbstractAdapter implements AdapterInterface
         if (in_array($name, $disabledFunctions)) {
             throw new SysInfoException(sprintf('Function %s is disabled in disable_functions in php.ini.', $name));
         }
-    }
-
-    public function reset(): void
-    {
     }
 }

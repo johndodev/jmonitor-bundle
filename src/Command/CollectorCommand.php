@@ -11,14 +11,14 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand('jmonitor:collect')]
 class CollectorCommand extends Command
 {
-    protected static $defaultName = 'jmonitor:collect';
-
     private Jmonitor $jmonitor;
     private Client $client;
     private ?LoggerInterface $logger;
@@ -60,6 +60,7 @@ class CollectorCommand extends Command
         try {
             $metrics = $this->jmonitor->collectMetrics();
         } catch (\Throwable $e) {
+            throw $e;
             $this->logger->error('Error while collecting metrics', [
                 'exception' => $e,
             ]);
