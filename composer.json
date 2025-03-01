@@ -4,7 +4,7 @@
     "name": "johndodev/jmonitor-bundle",
     "type": "symfony-bundle",
     "license": "MIT",
-    "keywords": ["monitoring", "mysql", "apache", "metrics", "symfony"],
+    "keywords": ["monitoring", "mysql", "php", "redis", "apache", "nginx", "system", "metrics", "symfony"],
     "authors": [
         {
             "name": "Johndodev",
@@ -13,20 +13,23 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.2",
+        "php": "^8.1",
         "ext-json": "*",
-        "cronfig/sysinfo": "^1.0",
         "doctrine/doctrine-bundle": "^2.13",
         "php-http/discovery": "^1.20",
         "psr/http-client": "^1.0",
-        "symfony/console": "^7.1",
-        "symfony/framework-bundle": "^7.0"
+        "psr/log": "^1.1",
+        "symfony/console": "^6.4|^7.0",
+        "symfony/framework-bundle": "^6.4|^7.0"
     },
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.1"
         }
     },
     "autoload": {

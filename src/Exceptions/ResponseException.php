@@ -12,7 +12,7 @@ class ResponseException extends JmonitorException implements ClientExceptionInte
 
     public function __construct(string $message, string $response, \Throwable $previous = null)
     {
-        parent::__construct($message, previous: $previous);
+        parent::__construct($message, 0, $previous);
 
         $this->response = $response;
     }

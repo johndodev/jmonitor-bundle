@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Johndodev\JmonitorBundle\Collector;
+namespace Johndodev\JmonitorBundle\Collector\Mysql;
 
 use Doctrine\DBAL\Connection;
+use Johndodev\JmonitorBundle\Collector\CollectorInterface;
 
 class MysqlSlowQueriesCollector implements CollectorInterface
 {

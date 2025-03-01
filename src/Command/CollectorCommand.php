@@ -10,14 +10,15 @@ use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Attribute\AsCommand;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'jmonitor:collect')]
 class CollectorCommand extends Command
 {
+    protected static $defaultName = 'jmonitor:collect';
+
     private Jmonitor $jmonitor;
     private Client $client;
     private ?LoggerInterface $logger;
@@ -32,7 +33,7 @@ class CollectorCommand extends Command
 
         $this->jmonitor = $jmonitor;
         $this->client = $client;
-        $this->logger = $logger;
+        $this->logger = $logger ?: new NullLogger();
         $this->cache = $cache;
     }
 
@@ -49,7 +50,7 @@ class CollectorCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($this->context->getNbDelayedExecution() > 0) {
-            $this->logger?->info('Execution delayed', ['remain delayed execution' => $this->context->getNbDelayedExecution()]);
+            $this->logger->info('Execution delayed', ['remain delayed execution' => $this->context->getNbDelayedExecution()]);
 
             $this->saveContext();
 
@@ -59,26 +60,26 @@ class CollectorCommand extends Command
         try {
             $metrics = $this->jmonitor->collectMetrics();
         } catch (\Throwable $e) {
-            $this->logger?->error('Error while collecting metrics', [
+            $this->logger->error('Error while collecting metrics', [
                 'exception' => $e,
             ]);
 
             return Command::FAILURE;
         }
 
-        $this->logger?->debug('Metrics collected', ['metrics' => $metrics]);
+        $this->logger->debug('Metrics collected', ['metrics' => $metrics]);
 
         try {
             $this->client->sendMetrics($metrics);
         } catch (ResponseException $e) {
-            $this->logger?->error('Error while sending metrics, next send delayed', [
+            $this->logger->error('Error while sending metrics, next send delayed', [
                 'exception' => $e,
                 'response' => $e->getResponse(),
             ]);
 
             return $this->handleFailure();
         } catch (ClientExceptionInterface $e) {
-            $this->logger?->error('Error while sending metrics, next send delayed', ['exception' => $e]);
+            $this->logger->error('Error while sending metrics, next send delayed', ['exception' => $e]);
 
             return $this->handleFailure();
         }
