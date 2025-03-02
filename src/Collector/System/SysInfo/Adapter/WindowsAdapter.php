@@ -19,7 +19,7 @@ class WindowsAdapter extends LinuxAdapter
 
     public function getTotalMemory(): ?int
     {
-        $output = shell_exec('powershell -Command "Get-WmiObject -Class Win32_OperatingSystem | Select-Object TotalVisibleMemorySize" 2>$null');
+        $output = shell_exec('powershell -Command "Get-WmiObject -Class Win32_OperatingSystem | Select-Object TotalVisibleMemorySize"');
 
         preg_match('/(\d+)/', $output ?: '', $matches);
 
@@ -32,7 +32,7 @@ class WindowsAdapter extends LinuxAdapter
 
     public function getAvailableMemory(): ?int
     {
-        $output = shell_exec('powershell -Command "Get-WmiObject -Class Win32_OperatingSystem | Select-Object FreePhysicalMemory" 2>$null');
+        $output = shell_exec('powershell -Command "Get-WmiObject -Class Win32_OperatingSystem | Select-Object FreePhysicalMemory"');
 
         preg_match('/(\d+)/', $output ?: '', $matches);
 
@@ -51,7 +51,7 @@ class WindowsAdapter extends LinuxAdapter
             return $nb;
         }
 
-        $output = shell_exec('powershell -Command "Get-WmiObject -Class Win32_Processor | Select-Object NumberOfCores" 2>$null');
+        $output = shell_exec('powershell -Command "Get-WmiObject -Class Win32_Processor | Select-Object NumberOfCores"');
 
         preg_match_all('/\d+/', $output ?: '', $matches);
 
@@ -66,7 +66,7 @@ class WindowsAdapter extends LinuxAdapter
 
     public function getLoadPercent(): ?int
     {
-        $output = shell_exec('powershell -Command "Get-WmiObject -Class Win32_Processor | Select-Object LoadPercentage" 2>$null');
+        $output = shell_exec('powershell -Command "Get-WmiObject -Class Win32_Processor | Select-Object LoadPercentage"');
 
         if (!$output) {
             return null;

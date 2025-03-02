@@ -20,7 +20,11 @@ jmonitor:
     http_client: 'http_client'
     cache: 'cache.app'
     schedule: 'default'
-#    collectors:
-#        mysql:
-#            type: mysql
+    collectors:
+        mysql: ~
+        redis: ~
+        apache:
+            server_status_url: 'https://dash.jmonitor.dev/server-status'
+        system: ~
+        php: ~
 ```
