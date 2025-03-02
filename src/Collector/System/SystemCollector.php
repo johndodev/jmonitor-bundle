@@ -42,9 +42,9 @@ class SystemCollector implements CollectorInterface
             ],
         ];
 
+        $sysInfo->clearPropertyCache();
 
-
-        dd($stats);
+        return $stats;
     }
 
     public function getVersion(): int

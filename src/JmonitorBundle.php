@@ -2,6 +2,7 @@
 
 namespace Johndodev\JmonitorBundle;
 
+use Johndodev\JmonitorBundle\Collector\Apache\ApacheCollector;
 use Johndodev\JmonitorBundle\Collector\Mysql\MysqlQueriesCountCollector;
 use Johndodev\JmonitorBundle\Collector\Mysql\MysqlSlowQueriesCollector;
 use Johndodev\JmonitorBundle\Collector\System\SystemCollector;
@@ -77,7 +78,12 @@ class JmonitorBundle extends AbstractBundle
         }
 
         if ($config['collectors']['apache']['enabled'] ?? false) {
-
+            $container->services()->set(ApacheCollector::class)
+                ->args([
+                    $config['collectors']['apache']['server_status_url'],
+                ])
+                ->tag('jmonitor.collector', ['name' => 'apache'])
+            ;
         }
 
         if ($config['collectors']['system']['enabled'] ?? false) {
@@ -118,7 +124,7 @@ class JmonitorBundle extends AbstractBundle
                         ->arrayNode('apache')
                             ->children()
                                 ->booleanNode('enabled')->defaultTrue()->end()
-                                ->scalarNode('server_status_url')->defaultValue('https://localhost/server-status')->info('Url of apache mod_status. See Google.')->end()
+                                ->scalarNode('server_status_url')->defaultValue('https://localhost/server-status')->cannotBeEmpty()->info('Url of apache mod_status. See Google.')->end()
                             ->end()
                         ->end()
                         ->arrayNode('system')
