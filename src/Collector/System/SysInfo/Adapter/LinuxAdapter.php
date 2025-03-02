@@ -29,7 +29,7 @@ class LinuxAdapter extends AbstractAdapter
 
     public function getLoadPercent(): ?int
     {
-        return sys_getloadavg()[0] * 100;
+        return (int) (sys_getloadavg()[0] * 100);
     }
 
     public function getCoreCount(): int
