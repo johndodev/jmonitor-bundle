@@ -29,15 +29,17 @@ class LinuxAdapter extends AbstractAdapter
 
     public function getLoadPercent(): ?int
     {
-        return (int) (sys_getloadavg()[0] * 100);
+        return (int) (sys_getloadavg()[0] * 100) / $this->getCoreCount();
     }
 
     public function getCoreCount(): int
     {
-        return $this->getCacheValue('CORE_COUNT', function (CacheItemInterface $item) {
-            $item->expiresAfter(60 * 60 * 24 * 7);  // 7 days
+        return $this->getPropertyCache('core_count', function () {
+            return $this->getCacheValue('CORE_COUNT', function (CacheItemInterface $item) {
+                $item->expiresAfter(60 * 60 * 24 * 7);  // 7 days
 
-            return (int) trim(shell_exec('nproc --all'));
+                return (int) trim(shell_exec('nproc --all'));
+            });
         });
     }
 
