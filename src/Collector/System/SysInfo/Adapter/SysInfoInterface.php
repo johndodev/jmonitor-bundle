@@ -2,7 +2,7 @@
 
 namespace Johndodev\JmonitorBundle\Collector\System\SysInfo\Adapter;
 
-interface AdapterInterface
+interface SysInfoInterface
 {
     public function getTotalMemory(): ?int;
 
@@ -17,4 +17,8 @@ interface AdapterInterface
     public function getDiskFreeSpace(string $path): int;
 
     public function clearPropertyCache(): void;
+
+    public function getOsPrettyName(): ?string;
+
+    public function getUptime(): ?int;
 }

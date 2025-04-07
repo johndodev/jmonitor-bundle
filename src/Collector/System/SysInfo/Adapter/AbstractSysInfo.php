@@ -7,7 +7,7 @@ namespace Johndodev\JmonitorBundle\Collector\System\SysInfo\Adapter;
 use Johndodev\JmonitorBundle\Collector\System\SysInfo\Exceptions\SysInfoException;
 use Psr\Cache\CacheItemPoolInterface;
 
-abstract class AbstractAdapter implements AdapterInterface
+abstract class AbstractSysInfo implements SysInfoInterface
 {
     private array $availableFunctions = [];
 

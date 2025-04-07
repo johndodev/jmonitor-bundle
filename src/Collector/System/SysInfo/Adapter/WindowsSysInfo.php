@@ -7,7 +7,7 @@ namespace Johndodev\JmonitorBundle\Collector\System\SysInfo\Adapter;
 use Johndodev\JmonitorBundle\Collector\System\SysInfo\Exceptions\SysInfoException;
 use Psr\Cache\CacheItemPoolInterface;
 
-class WindowsAdapter extends LinuxAdapter
+class WindowsSysInfo extends LinuxSysInfo
 {
     public function __construct(CacheItemPoolInterface $cache)
     {
@@ -79,5 +79,16 @@ class WindowsAdapter extends LinuxAdapter
         }
 
         return null;
+    }
+
+    public function getOsPrettyName(): ?string
+    {
+        return php_uname();
+    }
+
+    public function getUptime(): ?int
+    {
+        // trop chiant
+        return rand(1, 1000000);
     }
 }
