@@ -108,7 +108,7 @@ class LinuxSysInfo extends AbstractSysInfo
             return $this->getCacheValue('JMONITOR.OS_RELEASE', function (CacheItemInterface $item) {
                 $item->expiresAfter(60 * 60 * 24 * 7);  // 7 days
 
-                $output = file_get_contents('cat /etc/os-release');
+                $output = file_get_contents('/etc/os-release');
                 $lines = explode("\n", $output);
                 $lines = array_filter($lines);
 
