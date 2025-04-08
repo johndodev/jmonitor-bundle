@@ -5,6 +5,8 @@ namespace Johndodev\JmonitorBundle;
 use Johndodev\JmonitorBundle\Collector\Apache\ApacheCollector;
 use Johndodev\JmonitorBundle\Collector\Mysql\MysqlQueriesCountCollector;
 use Johndodev\JmonitorBundle\Collector\Mysql\MysqlSlowQueriesCollector;
+use Johndodev\JmonitorBundle\Collector\Mysql\MysqlStatusCollector;
+use Johndodev\JmonitorBundle\Collector\Mysql\MysqlVariablesCollector;
 use Johndodev\JmonitorBundle\Collector\System\SystemCollector;
 use Johndodev\JmonitorBundle\Command\CollectorCommand;
 use Johndodev\JmonitorBundle\Jmonitor\Client;
@@ -75,6 +77,20 @@ class JmonitorBundle extends AbstractBundle
                     service('doctrine.dbal.default_connection')
                 ])
                 ->tag('jmonitor.collector', ['name' => 'mysql.slow_queries'])
+            ;
+
+            $container->services()->set(MysqlStatusCollector::class)
+                ->args([
+                    service('doctrine.dbal.default_connection')
+                ])
+                ->tag('jmonitor.collector', ['name' => 'mysql.status'])
+            ;
+
+            $container->services()->set(MysqlVariablesCollector::class)
+                ->args([
+                    service('doctrine.dbal.default_connection')
+                ])
+                ->tag('jmonitor.collector', ['name' => 'mysql.variables'])
             ;
         }
 
