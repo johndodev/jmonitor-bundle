@@ -35,7 +35,7 @@ class JmonitorBundle extends AbstractBundle
                 $config['base_url'],
                 self::VERSION,
                 $config['project_api_key'],
-                service($config['http_client'] ?? '')->ignoreOnInvalid(),
+                $config['http_client'] ? service($config['http_client']) : null,
             ])
         ;
 
@@ -51,7 +51,8 @@ class JmonitorBundle extends AbstractBundle
                 service(Jmonitor::class),
                 service($config['cache']),
                 service(Client::class),
-                service('logger')->ignoreOnInvalid(),
+//                service($config['logger'] ?? '')->ignoreOnInvalid(),
+                $config['logger'] ? service($config['logger']) : null,
             ])
             ->tag('console.command')
             ->tag('scheduler.task', [
@@ -106,9 +107,10 @@ class JmonitorBundle extends AbstractBundle
                 ->booleanNode('enabled')->defaultTrue()->end()
                 ->scalarNode('project_api_key')->defaultNull()->info('You can find it in your jmonitor.io settings.')->end()
                 ->scalarNode('base_url')->defaultValue('https://collector.jmonitor.io')->cannotBeEmpty()->end()
-                ->scalarNode('http_client')->info('Name of a Psr\Http\Client\ClientInterface service')->end()
-                ->scalarNode('cache')->cannotBeEmpty()->defaultValue('cache.app')->info('Name of a Psr\Cache\CacheItemPoolInterface service, default is "cache.app"')->end()
-                ->scalarNode('schedule')->cannotBeEmpty()->defaultValue('default')->info('Name of the schedule used to handle the recurring metrics collection, default is "default"')->end()
+                ->scalarNode('http_client')->info('Name of a Psr\Http\Client\ClientInterface service. Optionnal. If null, Psr18ClientDiscovery will be used.')->end()
+                ->scalarNode('cache')->cannotBeEmpty()->defaultValue('cache.app')->info('Name of a Psr\Cache\CacheItemPoolInterface service, default is "cache.app". Required.')->end()
+                ->scalarNode('logger')->defaultValue('logger')->info('Name of a Psr\Log\LoggerInterface service, default is "logger". Set null to disable logging.')->end()
+                ->scalarNode('schedule')->cannotBeEmpty()->defaultValue('default')->info('Name of the schedule used to handle the recurring metrics collection, default is "default". Required.')->end()
                 ->arrayNode('collectors')
                     ->addDefaultsIfNotSet() // permet de récup un tableau vide si pas de config
                     // ->useAttributeAsKey()

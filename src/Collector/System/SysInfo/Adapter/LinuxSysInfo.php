@@ -109,6 +109,12 @@ class LinuxSysInfo extends AbstractSysInfo
                 $item->expiresAfter(60 * 60 * 24 * 7);  // 7 days
 
                 $output = file_get_contents('/etc/os-release');
+
+                if ($output === false) {
+                    // TODO exception ?
+                    return [];
+                }
+
                 $lines = explode("\n", $output);
                 $lines = array_filter($lines);
 

@@ -19,12 +19,13 @@ jmonitor:
     project_api_key: '%env(JMONITOR_API_KEY)%'
     http_client: 'http_client'
     cache: 'cache.app'
+    logger: 'logger'
     schedule: 'default'
     collectors:
         mysql: ~
         redis: ~
         apache:
-            server_status_url: 'https://dash.jmonitor.dev/server-status'
+            server_status_url: 'https://my.project.com/server-status'
         system: ~
         php: ~
 ```
