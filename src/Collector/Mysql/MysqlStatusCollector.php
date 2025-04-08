@@ -16,8 +16,6 @@ class MysqlStatusCollector implements CollectorInterface
         'Threads_connected',
         'Threads_running',
         'Questions',
-        'slow_query_log',
-        'slow_query_log_file',
         'Aborted_connects',
         'Aborted_clients',
         'Com_select',

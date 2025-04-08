@@ -18,6 +18,8 @@ class MysqlVariablesCollector implements CollectorInterface
         'max_connections',
         'version',
         'version_comment',
+        'slow_query_log',
+        'slow_query_log_file',
         'long_query_time',
         'tmp_table_size',          // a checker
         'max_heap_table_size',      // a checker
