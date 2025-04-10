@@ -41,6 +41,8 @@ class SystemCollector implements CollectorInterface
                 'pretty_name' => $sysInfo->getOsPrettyName(),
                 'uptime' => $sysInfo->getUptime(),
             ],
+            'time' => time(),
+            'hostname' => gethostname(),
         ];
 
         $sysInfo->clearPropertyCache();

@@ -47,6 +47,11 @@ abstract class AbstractSysInfo implements SysInfoInterface
         $this->availableFunctions[$name] = true;
     }
 
+    public function clearPropertyCache(): void
+    {
+        $this->propertyCache = [];
+    }
+
     protected function getCacheValue(string $name, callable $callback): mixed
     {
         $item = $this->cache->getItem($name);
@@ -70,11 +75,6 @@ abstract class AbstractSysInfo implements SysInfoInterface
         }
 
         return $this->propertyCache[$name] = $callback();
-    }
-
-    public function clearPropertyCache(): void
-    {
-        $this->propertyCache = [];
     }
 
     private function assertFunctionExist(string $name): void

@@ -21,6 +21,9 @@ class MysqlVariablesCollector implements CollectorInterface
         'slow_query_log',
         'slow_query_log_file',
         'long_query_time',
+        'time_zone',
+        'system_time_zone',
+        'timestamp',
         'tmp_table_size',          // a checker
         'max_heap_table_size',      // a checker
         'sort_buffer_size',     // a checker
