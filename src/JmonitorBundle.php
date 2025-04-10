@@ -7,6 +7,7 @@ use Johndodev\JmonitorBundle\Collector\Mysql\MysqlQueriesCountCollector;
 use Johndodev\JmonitorBundle\Collector\Mysql\MysqlSlowQueriesCollector;
 use Johndodev\JmonitorBundle\Collector\Mysql\MysqlStatusCollector;
 use Johndodev\JmonitorBundle\Collector\Mysql\MysqlVariablesCollector;
+use Johndodev\JmonitorBundle\Collector\Php\PhpCollector;
 use Johndodev\JmonitorBundle\Collector\System\SystemCollector;
 use Johndodev\JmonitorBundle\Command\CollectorCommand;
 use Johndodev\JmonitorBundle\Jmonitor\Client;
@@ -111,6 +112,15 @@ class JmonitorBundle extends AbstractBundle
                 ->tag('jmonitor.collector', ['name' => 'system'])
             ;
         }
+
+        if ($config['collectors']['php']['enabled'] ?? false) {
+            $container->services()->set(PhpCollector::class)
+                ->args([
+                    $config['collectors']['php']['fpm_status_url'],
+                ])
+                ->tag('jmonitor.collector', ['name' => 'php'])
+            ;
+        }
     }
 
     /**
@@ -123,7 +133,7 @@ class JmonitorBundle extends AbstractBundle
                 ->booleanNode('enabled')->defaultTrue()->end()
                 ->scalarNode('project_api_key')->defaultNull()->info('You can find it in your jmonitor.io settings.')->end()
                 ->scalarNode('base_url')->defaultValue('https://collector.jmonitor.io')->cannotBeEmpty()->end()
-                ->scalarNode('http_client')->info('Name of a Psr\Http\Client\ClientInterface service. Optionnal. If null, Psr18ClientDiscovery will be used.')->end()
+                ->scalarNode('http_client')->defaultNull()->info('Name of a Psr\Http\Client\ClientInterface service. Optional. If null, Psr18ClientDiscovery will be used.')->end()
                 ->scalarNode('cache')->cannotBeEmpty()->defaultValue('cache.app')->info('Name of a Psr\Cache\CacheItemPoolInterface service, default is "cache.app". Required.')->end()
                 ->scalarNode('logger')->defaultValue('logger')->info('Name of a Psr\Log\LoggerInterface service, default is "logger". Set null to disable logging.')->end()
                 ->scalarNode('schedule')->cannotBeEmpty()->defaultValue('default')->info('Name of the schedule used to handle the recurring metrics collection, default is "default". Required.')->end()
@@ -142,7 +152,7 @@ class JmonitorBundle extends AbstractBundle
                         ->arrayNode('apache')
                             ->children()
                                 ->booleanNode('enabled')->defaultTrue()->end()
-                                ->scalarNode('server_status_url')->defaultValue('https://localhost/server-status')->cannotBeEmpty()->info('Url of apache mod_status. See Google.')->end()
+                                ->scalarNode('server_status_url')->defaultValue('https://localhost/server-status')->cannotBeEmpty()->info('Url of apache mod_status.')->end()
                             ->end()
                         ->end()
                         ->arrayNode('system')
@@ -158,6 +168,7 @@ class JmonitorBundle extends AbstractBundle
                         ->arrayNode('php')
                             ->children()
                                 ->booleanNode('enabled')->defaultTrue()->end()
+                                ->scalarNode('fpm_status_url')->defaultNull()->info('Url of php-fpm status page.')->end()
                             ->end()
                         ->end()
                     ->end()
