@@ -8,6 +8,7 @@ use Johndodev\JmonitorBundle\Collector\Mysql\MysqlSlowQueriesCollector;
 use Johndodev\JmonitorBundle\Collector\Mysql\MysqlStatusCollector;
 use Johndodev\JmonitorBundle\Collector\Mysql\MysqlVariablesCollector;
 use Johndodev\JmonitorBundle\Collector\Php\PhpCollector;
+use Johndodev\JmonitorBundle\Collector\Redis\RedisCollector;
 use Johndodev\JmonitorBundle\Collector\System\SystemCollector;
 use Johndodev\JmonitorBundle\Command\CollectorCommand;
 use Johndodev\JmonitorBundle\Jmonitor\Client;
@@ -121,6 +122,15 @@ class JmonitorBundle extends AbstractBundle
                 ->tag('jmonitor.collector', ['name' => 'php'])
             ;
         }
+
+        if ($config['collectors']['redis']['enabled'] ?? false) {
+            $container->services()->set(RedisCollector::class)
+                ->args([
+                    $config['collectors']['redis']['adapter'] ? service($config['collectors']['redis']['adapter']) : $config['collectors']['redis']['dsn'],
+                ])
+                ->tag('jmonitor.collector', ['name' => 'php'])
+            ;
+        }
     }
 
     /**
@@ -163,6 +173,8 @@ class JmonitorBundle extends AbstractBundle
                         ->arrayNode('redis')
                             ->children()
                                 ->booleanNode('enabled')->defaultTrue()->end()
+                                ->scalarNode('dsn')->defaultNull()->info('Redis DSN. See https://symfony.com/doc/current/components/cache/adapters/redis_adapter.html')->end()
+                                ->scalarNode('adapter')->defaultNull()->info('Redis or Predis service name')->end()
                             ->end()
                         ->end()
                         ->arrayNode('php')

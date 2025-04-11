@@ -19,6 +19,7 @@ class PhpCollector implements CollectorInterface
     {
         return [
             'version' => phpversion(),
+            'ini_file' => php_ini_loaded_file(),
             'ini_files' => $this->getIniFiles(),
             'memory_limit' => ini_get('memory_limit'),
             'max_execution_time' => ini_get('max_execution_time'),

@@ -39,6 +39,7 @@
         "psr-4": { "Symfony\\JmonitorBundle\\Tests\\": "tests/" }
     },
     "require-dev": {
+        "predis/predis": "^2.0",
         "psr/http-factory": "^1.1"
     }
 }

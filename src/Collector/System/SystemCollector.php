@@ -42,6 +42,7 @@ class SystemCollector implements CollectorInterface
                 'uptime' => $sysInfo->getUptime(),
             ],
             'time' => time(),
+            'timezone' => date_default_timezone_get(),
             'hostname' => gethostname(),
         ];
 
