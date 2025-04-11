@@ -128,7 +128,7 @@ class JmonitorBundle extends AbstractBundle
                 ->args([
                     $config['collectors']['redis']['adapter'] ? service($config['collectors']['redis']['adapter']) : $config['collectors']['redis']['dsn'],
                 ])
-                ->tag('jmonitor.collector', ['name' => 'php'])
+                ->tag('jmonitor.collector', ['name' => 'redis'])
             ;
         }
     }
