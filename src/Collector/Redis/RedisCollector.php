@@ -92,5 +92,4 @@ class RedisCollector implements CollectorInterface
     {
         return 1;
     }
-
 }
