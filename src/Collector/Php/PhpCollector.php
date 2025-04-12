@@ -26,6 +26,7 @@ class PhpCollector implements CollectorInterface
             'post_max_size' => ini_get('post_max_size'),
             'upload_max_filesize' => ini_get('upload_max_filesize'),
             'date.timezone' => ini_get('date.timezone'),
+            'loaded_extensions' => get_loaded_extensions(),
             'opcache' => $this->getOpcacheInfos(),
             'fpm' => 'TODO',
         ];
