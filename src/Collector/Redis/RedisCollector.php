@@ -103,23 +103,25 @@ class RedisCollector implements CollectorInterface
 
     private function flatten(array $array): array
     {
-        return array_reduce($array, function ($carry, $item) {
-            if (is_array($item)) {
-                foreach ($item as $key => $value) {
-                    $carry[$key] = $value;
+        $result = [];
+
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    $result[$k] = $v;
                 }
             } else {
-                $carry[$item] = $item;
+                $result[$key] = $value;
             }
+        }
 
-            return $carry;
-        }, []);
+        return $result;
     }
 
     private function getDatabases(array $infos): \Traversable
     {
         foreach ($infos as $k => $v) {
-            if (is_string($k) && str_starts_with($k, 'db')) {
+            if (str_starts_with($k, 'db')) {
                 yield $k => $v;
             }
         }
