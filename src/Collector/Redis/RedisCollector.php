@@ -119,7 +119,7 @@ class RedisCollector implements CollectorInterface
     private function getDatabases(array $infos): \Traversable
     {
         foreach ($infos as $k => $v) {
-            if (str_starts_with($k, 'db')) {
+            if (is_string($k) && str_starts_with($k, 'db')) {
                 yield $k => $v;
             }
         }
