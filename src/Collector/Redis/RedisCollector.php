@@ -37,7 +37,7 @@ class RedisCollector implements CollectorInterface
 
         $infos = $this->flatten($infos);
 
-        $a = [
+        return [
             'server' => [
                 'version' => $infos['redis_version'] ?? null,
                 'mode' => $infos['redis_mode'] ?? null,
